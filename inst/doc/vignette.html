@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="David Lauenstein" />
+
+<meta name="date" content="2019-08-09" />
+
+<title>Biopeak R Package Implementation</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Biopeak R Package Implementation</h1>
+<h4 class="author"><em>David Lauenstein</em></h4>
+<h4 class="date"><em>2019-08-09</em></h4>
+
+
+
+<div id="overview" class="section level2">
+<h2>1 Overview</h2>
+<p>The Biopeak R package enables the user to systematically identify and visualize impulse-like gene expression changes within short genomic series experiments. On a systems level, this tool allows to characterize dynamic gene expression signatures underlying biological processes. In order to detect such activation peaks, the gene expression is treated as a signal that propagates along the experimental axis (time, temperature or other series conditions).</p>
+</div>
+<div id="peak-detection-with-the-biopeak-package" class="section level2">
+<h2>2 Peak Detection with the Biopeak package</h2>
+<p>To demonstrate the functionality of this package, we are using a dataset comprising transcriptional profiles of human epithelial cells in response to heat available on GEO (GSE7458) <span class="citation">(J. M. Laramie 2008)</span>. In vitro cultured HEp2 cells were heated at 37 to 43 °C for 60 min and microarray gene expression profiles were acquired at 37, 40, 41, 42 and 43 °C.</p>
+<p>In a first step, we load the heat-shock data:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(Biopeak)</a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="co"># load the heat-shock data</span></a>
+<a class="sourceLine" id="cb1-3" title="3">exprmat &lt;-<span class="st"> </span>heat</a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="co"># Show first rows and columns of the expression matrix</span></a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="kw">head</span>(exprmat)</a></code></pre></div>
+<pre><code>##            Hep2_37    Hep2_40    Hep2_41   Hep2_42    Hep2_43
+## DAZL      25.64188   26.44370   48.65872  47.51223   17.54344
+## RAD23A   776.89917  609.15550  602.97183 823.58900  502.01850
+## RAP1B   1033.05450 1232.86550 1028.10150 900.49950 1074.90267
+## ARHGAP6   35.05837   53.72763   26.60629  31.21045   29.21352
+## GYPB     157.53467  167.29190  159.62667 157.61000  196.08050
+## UBE2N    464.30233  517.65315  549.37597 682.46653  521.46451</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="co"># Transform data frame to numeric matrix</span></a>
+<a class="sourceLine" id="cb3-2" title="2">exprmat &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(exprmat)</a></code></pre></div>
+<p>One of the strengths of the peak detection algorithm lays in its great flexibility to process data source-independently. While the main focus of this package is aimed at the characterization of genomic data, in theory, any type of series experiment that can be described as a signal could be analyzed. Since peaks are assessed for each gene relative to its expression over time or over the course of different stimuli strenghts, prior normalization steps are usualy not required. Therefore, we can directly subject the Rna-Seq or microarray count expression matrix to the peak detection algorithm: the peakDetection function.</p>
+<p>The peakDetection function takes as input the expression matrix and the series description, a numeric vector which defines the conditions/time-points of sample acquisition. In order to identify biomarkers which are specific to a distinct phase of the observed biological process, we provide a set of tunable filters that define the characterstics of a peak. Peak characteristics that have to be defined are:</p>
+<ul>
+<li>activation strength (actstrength): Threshold for minimal activation relative to the mean expression across all conditions.</li>
+<li>prominence: Threshold for minimal peak prominence relative to the second highest peak. In simple terms: how much higher does the mainpeak have to be relative to the second highest peak. If set to 1, multiple peaks per gene are allowed.</li>
+<li>type: Definition of study type with possible values ‘microarray’ or ‘rnaseq’.</li>
+</ul>
+<p>Furthermore, the function supports optional parameters for more complex operations:</p>
+<ul>
+<li>minimum expression (minexpr): Threshold for minimal mean expression across all condition for a given gene.</li>
+<li>background correction (bgcorr): Background noise correction. Genes with an expression lower than the 5 % quantile of the entire expression matrix are discarded.</li>
+<li>peakwidth: Minimal number of conditions/time-points that a peak spans (based on sustact threshold).</li>
+<li>sustained activation (sustact): Threshold for minimal peakheight relative to the main peak to be considered as sustained activation.</li>
+</ul>
+<p>In this case study, we are primarily interested in finding genes that peak at a single condition, in order to identify gene activation thresholds under heat-shock conditions. Thus, we set the prominence parameter to 1.3, to select for genes that feature a peak that is at least 30 % higher in magnitude than any other peak. Moreover, we want to filter out peaks with low heights relative to the mean expression. Therefore the actstrength parameter is set to 1.5, selecting for peaks that feature at least 50 % higher expression than the mean expression of that gene. Lastly, we selected only the top 50 % expressed genes, to reduce the computational load.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="co"># define condition series</span></a>
+<a class="sourceLine" id="cb4-2" title="2">series &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">37</span>,<span class="dv">40</span>,<span class="dv">41</span>,<span class="dv">42</span>,<span class="dv">43</span>)</a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="co"># Find the expression limit for the 50 % highest expressing genes and selec them</span></a>
+<a class="sourceLine" id="cb4-4" title="4">exprlim &lt;-<span class="st"> </span><span class="kw">quantile</span>(exprmat, probs &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="fl">0.01</span>))[<span class="dv">51</span>]</a>
+<a class="sourceLine" id="cb4-5" title="5">exprmat &lt;-<span class="st"> </span>exprmat[<span class="kw">which</span>(<span class="kw">rowMeans</span>(exprmat) <span class="op">&gt;</span><span class="st"> </span>exprlim),]</a>
+<a class="sourceLine" id="cb4-6" title="6"><span class="co"># run the peak detection algorithm</span></a>
+<a class="sourceLine" id="cb4-7" title="7">peakdet &lt;-<span class="st"> </span><span class="kw">peakDetection</span>(exprmat, series, <span class="dt">type =</span><span class="st">&#39;rnaseq&#39;</span>, <span class="dt">actstrength =</span> <span class="fl">1.5</span>, <span class="dt">prominence =</span> <span class="fl">1.3</span>,</a>
+<a class="sourceLine" id="cb4-8" title="8">                         <span class="dt">bgcorr =</span> F)</a></code></pre></div>
+<p>The peakDetection function returns a set of vectors and matrices:</p>
+<ul>
+<li>peakgenes: A character vector of gene symbols for which a peak has been identified</li>
+<li>peakloc: A numeric vector containing the location of each peak.</li>
+<li>peakheight: A numeric vector containing the absolute height of each peak.</li>
+<li>neighbors: A numeric matrix containing time-points with sustained activation. Conditions/time-points with sustained activation are ranked by their distance to the main peak which always has value 1. Thus, a time-point with a value of 3 is 3-1 = 2 conditions/time-points away from the main peak. Conditions with value 0 show no sustained activation. If the peakwidth parameter is set greater than 0, the output of the peakDetection function can be used to filter for genes with sustained activation within the main peak neighborhood.</li>
+</ul>
+</div>
+<div id="discovering-the-temporal-regulation-of-activated-biomarkers" class="section level2">
+<h2>3 Discovering the temporal regulation of activated biomarkers</h2>
+<p>The output of the peakDetection function provides a format that facilitates queries on a gene-level and systems-level.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="co"># number of genes detected by the peakDetection function</span></a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="kw">length</span>(peakdet<span class="op">$</span>peakgenes)</a></code></pre></div>
+<pre><code>## [1] 205</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co"># filter for genes which peak at 43 °C</span></a>
+<a class="sourceLine" id="cb7-2" title="2">peakdet<span class="op">$</span>peakgenes[<span class="kw">which</span>(peakdet<span class="op">$</span>peakloc <span class="op">==</span><span class="st"> </span><span class="dv">43</span>)]</a></code></pre></div>
+<pre><code>##  [1] &quot;CNNM2&quot;                            &quot;SFI1&quot;                            
+##  [3] &quot;PNN&quot;                              &quot;KRT7&quot;                            
+##  [5] &quot;BASP1&quot;                            &quot;RAF1&quot;                            
+##  [7] &quot;GBA /// GBAP1 /// LOC100510710&quot;   &quot;GADD45B&quot;                         
+##  [9] &quot;MKL1&quot;                             &quot;CDK13&quot;                           
+## [11] &quot;NRG1&quot;                             &quot;XKRY /// XKRY2&quot;                  
+## [13] &quot;H3F3A /// H3F3B /// MIR4738&quot;      &quot;RCAN2&quot;                           
+## [15] &quot;LOC100507577 /// LONP2&quot;           &quot;SLC7A5&quot;                          
+## [17] &quot;RPL23 /// RPL23P8 /// SNORA21&quot;    &quot;AKR7A2&quot;                          
+## [19] &quot;ZNF787&quot;                           &quot;NUP188&quot;                          
+## [21] &quot;ACTA2&quot;                            &quot;APOF&quot;                            
+## [23] &quot;HOXD13&quot;                           &quot;BSN&quot;                             
+## [25] &quot;PPAP2B&quot;                           &quot;CAPN1&quot;                           
+## [27] &quot;CNKSR2&quot;                           &quot;USP6NL /// USP6NL-IT1&quot;           
+## [29] &quot;FLRT2 /// LOC100506718&quot;           &quot;TNFRSF8&quot;                         
+## [31] &quot;MAGEC1&quot;                           &quot;ARSF&quot;                            
+## [33] &quot;BRS3&quot;                             &quot;C2CD2L&quot;                          
+## [35] &quot;KRT18&quot;                            &quot;DLEC1&quot;                           
+## [37] &quot;SYT17&quot;                            &quot;ANXA11&quot;                          
+## [39] &quot;KIR3DL1 /// KIR3DL2&quot;              &quot;ARHGAP29&quot;                        
+## [41] &quot;MXRA5&quot;                            &quot;IFI44L&quot;                          
+## [43] &quot;HAAO&quot;                             &quot;CKMT2&quot;                           
+## [45] &quot;DBI&quot;                              &quot;CUL3&quot;                            
+## [47] &quot;DOPEY2&quot;                           &quot;CYTH2&quot;                           
+## [49] &quot;TUBB2B&quot;                           &quot;TNFRSF14&quot;                        
+## [51] &quot;C5orf45&quot;                          &quot;CAPRIN1&quot;                         
+## [53] &quot;ITGA5&quot;                            &quot;GBF1&quot;                            
+## [55] &quot;HEXIM1&quot;                           &quot;P2RX5&quot;                           
+## [57] &quot;ID2&quot;                              &quot;CHD9&quot;                            
+## [59] &quot;MT1F /// MT1G /// MT1M /// MT1P3&quot; &quot;GATA6&quot;                           
+## [61] &quot;MSX2P1&quot;                           &quot;Fas&quot;</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="co"># return the peakheight and location of the gene CDK13</span></a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="kw">c</span>(peakdet<span class="op">$</span>peakheight[<span class="kw">which</span>(peakdet<span class="op">$</span>peakgenes <span class="op">==</span><span class="st"> &#39;CDK13&#39;</span>)],</a>
+<a class="sourceLine" id="cb9-3" title="3">  peakdet<span class="op">$</span>peakloc[<span class="kw">which</span>(peakdet<span class="op">$</span>peakgenes <span class="op">==</span><span class="st"> &#39;CDK13&#39;</span>)])</a></code></pre></div>
+<pre><code>## [1] 4114.631   43.000</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="co"># assess the main peak neighborhood for sustained activation</span></a>
+<a class="sourceLine" id="cb11-2" title="2">peakdet<span class="op">$</span>neighbors[<span class="kw">which</span>(peakdet<span class="op">$</span>peakgenes <span class="op">==</span><span class="st"> &#39;CDK13&#39;</span>),]</a></code></pre></div>
+<pre><code>## [1] 0 4 0 0 1</code></pre>
+<p>The plotExpression function allows to plot the expression signal of individual genes:</p>
+<div id="plot-the-expression-signal-of-individual-genes" class="section level3">
+<h3>3.1 Plot the expression signal of individual genes</h3>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">plotExpression</span>(exprmat,<span class="st">&#39;CDK13&#39;</span>,series,peakdet)</a></code></pre></div>
+<div class="figure" style="text-align: center">
+<img src="data:image/png;base64,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" alt="\label{fig:plotexpression}Figure 1: Individual gene expression signal for CDK13. The dashed line marks the main peak location." />
+<p class="caption">
+Figure 1: Individual gene expression signal for CDK13. The dashed line marks the main peak location.
+</p>
+</div>
+</div>
+<div id="gene-co-expression-analysis" class="section level3">
+<h3>3.2 Gene co-expression analysis</h3>
+<p>Gene co-expression analyses are a widely used tool in genomic studies. In this package we provide the getCormat function which calculates a gene-wise correlation matrix and plots a bi-clustered heatmap. The function returns both the heatmap object and the re-ordered correlation matrix:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">dev.off</span>()</a></code></pre></div>
+<pre><code>## null device 
+##           1</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">corobjects &lt;-<span class="st"> </span><span class="kw">getCormat</span>(peakdet, exprmat, <span class="dt">method =</span> <span class="st">&#39;spearman&#39;</span>)</a>
+<a class="sourceLine" id="cb16-2" title="2"><span class="co"># extract heatmap object</span></a>
+<a class="sourceLine" id="cb16-3" title="3">corheatmap &lt;-<span class="st"> </span>corobjects<span class="op">$</span>hm</a>
+<a class="sourceLine" id="cb16-4" title="4"><span class="co"># extract re-ordered correlation matrix</span></a>
+<a class="sourceLine" id="cb16-5" title="5">cormatrix &lt;-<span class="st"> </span>corobjects<span class="op">$</span>hm_cormat</a>
+<a class="sourceLine" id="cb16-6" title="6"><span class="co"># inspect the first 5 x 5 gene-wise correlation of the correlation matrix returned by plotCormat</span></a>
+<a class="sourceLine" id="cb16-7" title="7">cormatrix[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>,<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]</a></code></pre></div>
+<pre><code>##                           TNNT1 ST3GAL5 CHD2
+## RIOK3                      -0.6    -0.6 -0.6
+## JMJD6                      -0.6    -0.6 -0.6
+## IL23A /// TRBC2 /// TRBC2  -0.6    -0.6 -0.6
+## IL1R1                      -0.6    -0.6 -0.6
+## COPS5                      -0.6    -0.6 -0.6
+##                           LOC101929087 /// SUMO2 /// SUMO3 HHLA1
+## RIOK3                                                 -0.6  -0.7
+## JMJD6                                                 -0.6  -0.7
+## IL23A /// TRBC2 /// TRBC2                             -0.6  -0.7
+## IL1R1                                                 -0.6  -0.7
+## COPS5                                                 -0.6  -0.7</code></pre>
+</div>
+<div id="identification-of-biomarker-clusters-with-similar-gene-regulation" class="section level3">
+<h3>3.3 Identification of biomarker clusters with similar gene regulation</h3>
+<p>The peakDetection algorithm represents a powerful tool for the exhaustive identification of condition or time-point specific biomarkers. For the analysis of the temporal gene expression and given enough time-points, those time-points can be further grouped together to reflect waves of gene activation, such as an immediate, early, mid and late response. Since in most explorative studies the number of such waves underlying a given biological process is unknown, the Biopeak package provides a cluster exploration function: findClusters. The findClusters function estimates the number of genes with similar temporal regulation and supports three different clustering algorithms: kmeans, dbscan and hierarchical clustering. Clustering is based on a PCA projection of the input data and cluster assignment and parameters are returned by the function.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1"><span class="co"># display all plots in one graph</span></a>
+<a class="sourceLine" id="cb18-2" title="2"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb18-3" title="3"><span class="co"># cluster exploration using hierarchical clustering based on 3 clusters</span></a>
+<a class="sourceLine" id="cb18-4" title="4">clusters &lt;-<span class="kw">findClusters</span>(peakdet, exprmat, <span class="dt">method =</span> <span class="st">&#39;hclust&#39;</span>, <span class="dt">clusters =</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb18-5" title="5"><span class="co"># cluster exploration using dbscan (density-based) with an epsilon parameter of 0.02</span></a>
+<a class="sourceLine" id="cb18-6" title="6">clusters &lt;-<span class="st"> </span><span class="kw">findClusters</span>(peakdet, exprmat, <span class="dt">method =</span> <span class="st">&#39;dbscan&#39;</span>, <span class="dt">eps =</span> <span class="fl">0.1</span>)</a>
+<a class="sourceLine" id="cb18-7" title="7"><span class="co"># cluster exploration using kmeans with a maximum of 5 clusters to be assigned</span></a>
+<a class="sourceLine" id="cb18-8" title="8">clusters &lt;-<span class="st"> </span><span class="kw">findClusters</span>(peakdet, exprmat, <span class="dt">maxclusters =</span> <span class="dv">3</span>, <span class="dt">method =</span> <span class="st">&#39;kmeans&#39;</span>)</a></code></pre></div>
+<div class="figure" style="text-align: center">
+<img src="data:image/png;base64,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" alt="\label{fig:findclusters}Figure 3: Clusters of biomarkers with similar temporal regulation based on three different algorithms (hclust, dbscan and kmeans)." />
+<p class="caption">
+Figure 3: Clusters of biomarkers with similar temporal regulation based on three different algorithms (hclust, dbscan and kmeans).
+</p>
+</div>
+</div>
+<div id="plot-selected-biomarkers-in-a-heatmap" class="section level3">
+<h3>3.4 Plot selected biomarkers in a heatmap</h3>
+<p>The plotHeatmap function represents a simple wrapper function that takes the output of the peakDetection function and normalizes the expression to log2 values for improved visualization before subjecting it to the heatmap.2 function. The clustermembers parameter is optional and allows to select for specific genes. Here, we take the output of the findClusters function and plot a heatmap for one of the clusters:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1">heatmap &lt;-<span class="st"> </span><span class="kw">plotHeatmap</span>(peakdet, exprmat, <span class="dt">clustermembers =</span> clusters<span class="op">$</span>clustermembers[[<span class="dv">3</span>]])</a></code></pre></div>
+<div class="figure" style="text-align: center">
+<img src="data:image/png;base64,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" alt="\label{fig:plotheatmap}Figure 4: Heatmap of the second cluster returned by the findClusters function. The second cluster reflects primarily genes involved in the immediate LPS-induced response." />
+<p class="caption">
+Figure 4: Heatmap of the second cluster returned by the findClusters function. The second cluster reflects primarily genes involved in the immediate LPS-induced response.
+</p>
+</div>
+</div>
+<div id="save-the-peak-detection-output-to-a-text-file" class="section level3">
+<h3>3.5 Save the peak detection output to a text file</h3>
+<p>The function saveOutput saves the output of the peakDetetection funtion (peakgenes, peaklocation and peakheight) to a text file.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1"><span class="kw">saveOutput</span>(peakdet,<span class="kw">file.path</span>(<span class="kw">tempdir</span>(),<span class="st">&#39;heat_out.txt&#39;</span>))</a></code></pre></div>
+</div>
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2>4 References</h2>
+<div id="refs" class="references">
+<div id="ref-heatpub">
+<p>J. M. Laramie, B. Brownstein, T. P. Chung. 2008. <em>Transcriptional Profiles of Human Epithelial Cells in Response to Heat</em>. <em>Shock</em>.</p>
+</div>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
